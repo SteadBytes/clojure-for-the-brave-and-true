@@ -1,0 +1,17 @@
+*.pdf
+# example code provided by author
+cftbat-code/
+pegthing/
+
+/target
+/classes
+/checkouts
+pom.xml
+pom.xml.asc
+*.jar
+*.class
+/.lein-*
+/.nrepl-port
+.hgignore
+.hg/
+Clojure REPL
