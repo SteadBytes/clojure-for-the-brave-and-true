@@ -4,6 +4,8 @@
 
 (def precedence {'+ 1 '- 1 '* 2 '/ 2})
 
+; Algorithm based on Chapter 12 from Winston, Patrick Henry and Berthold Klaus Paul Horn.
+; Lisp (Second Edition). Massachusetts: Addison-Wesley Publishing Company, 1984. 185.
 (defn infix->prefix
   ([expr]
    (if ((complement seq?) expr)
