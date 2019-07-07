@@ -4,31 +4,33 @@
 
 (defn infix->prefix
   [expr]
-  (cond ((complement seq?) expr) expr
-        (= (count expr) 1) (infix->prefix (first expr))
-        :else
-        (loop [expr' (rest expr)
-               operands (list (infix->prefix (first expr)))
-               operators '()]
+  (if ((complement seq?) expr)
+    expr
+    (let [[a & as] expr]
+      (if (empty? as)
+        (infix->prefix a)
+        (loop [[a' & [b & bs] :as expr'] as
+               [opr & [opr' & oprs] :as operands] (list (infix->prefix a))
+               [op & ops :as operators] '()]
           (cond
             ; no expr or operators left -> return result
-            (and (empty? expr') (empty? operators)) (first operands)
+            (and (nil? a') (nil? op)) opr
             ; operator at top of expr has greater precedence than top operator
             ; push top of expr to top of operators
             ; convert 2nd item of expr to infix and push to top of operands
-            (and ((complement empty?) expr')
-                 (or (empty? operators)
-                     (> (precedence (first expr'))
-                        (precedence (first operators)))))
-            (recur (rest (rest expr'))
-                   (cons (infix->prefix (first (rest expr'))) operands)
-                   (cons (first expr') operators))
+            (and ((complement nil?) a')
+                 (or (nil? op)
+                     (> (precedence a')
+                        (precedence op))))
+            (recur bs
+                   (cons (infix->prefix b) operands)
+                   (cons a' operators))
             ; combine top operator with two top operands
-            :else (recur expr' (cons (list (first operators) ; construct composite operand
-                                           (first (rest operands))
-                                           (first operands))
-                                     (rest (rest operands)))
-                         (rest operators))))))
+            :else (recur expr' (cons (list op ; construct composite operand
+                                           opr'
+                                           opr)
+                                     oprs)
+                         ops)))))))
 
 (eval (infix->prefix '(1 + 3 * 4 - 5)))
 ; => 8
